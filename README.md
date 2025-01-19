@@ -1,3 +1,3 @@
 # KubernatesMyWay
 
-![Architecture of Kubernetes Hand Draw](images/k8sarchtreudrawn.jpg)
+![Architecture of Kubernetes Hand Draw](Images/K8sArchitectureDrawn.jpg)
