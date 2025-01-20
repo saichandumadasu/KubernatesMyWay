@@ -15,8 +15,8 @@ This repository contains a comprehensive guide and resources for setting up and 
 
 <details>
   <summary>ETCD</summary>
-  - [ETCD Notes](Cluster%20Core%20Components/ControlPlane/ETCD/Notes.md)
-  - [ETCD Manifest](Cluster%20Core%20Components/ControlPlane/ETCD/Manifest.yaml)
-  - [ETCD Scenario Based Questions](Cluster%20Core%20Components/ControlPlane/ETCD/ExamQuestions.md)
-  - [ETCD Commands](Cluster%20Core%20Components/ControlPlane/ETCD/commands.sh)
+  - [ETCD Notes](ClusterCoreComponents/ControlPlane/ETCD/Notes.md)
+  - [ETCD Manifest](ClusterCoreComponents/ControlPlane/ETCD/Manifest.yaml)
+  - [ETCD Scenario Based Questions](ClusterCoreComponents/ControlPlane/ETCD/ExamQuestions.md)
+  - [ETCD Commands](ClusterCoreComponents/ControlPlane/ETCD/commands.sh)
 </details>
