@@ -39,7 +39,7 @@
 3. **Scoring Phase**: Kubernetes assigns a score to each remaining node based on various criteria.
 4. **Node Selection**: The node with the highest score is selected as the best fit for the pod.
 
-![Kubernetes Scheduling Algorithm](Images/scheduling_algorithm.png) 
+![Kubernetes Scheduling Algorithm](../../Images/scheduling_algorithm.png)
 
 ## Components
 - **Predicates**: Boolean functions used for filtering nodes.

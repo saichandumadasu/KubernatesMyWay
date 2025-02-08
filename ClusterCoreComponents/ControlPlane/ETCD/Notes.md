@@ -2,10 +2,10 @@
 title: ETCD Notes
 ---
 
-Name : ETCD 
-Port : 2379
+# ETCD Notes
 
-etcd is a distributed reliable key-value store that is simple, secure, and fast
+## Overview
+ETCD is a distributed reliable key-value store that is simple, secure, and fast.
 
 ## Index
 - [Installation of ETCD](#installation-of-etcd)
