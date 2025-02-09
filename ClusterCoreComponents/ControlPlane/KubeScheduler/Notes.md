@@ -11,6 +11,8 @@
 - [Types of Scheduling Criteria](#types-of-scheduling-criteria)
 - [Advanced Concepts](#advanced-concepts)
 - [Conclusion](#conclusion)
+- [Taints and Tolerations](#taints-and-tolerations)
+- [Operators](#operators)
 
 ## Overview
 - **Purpose**: Assign pods (groups of one or more containers) to nodes in a cluster.
@@ -43,16 +45,17 @@
 
 ## Components
 - **Predicates**: Boolean functions used for filtering nodes.
-  - `PodFitsResources`: Checks if a node has enough CPU and memory.
-  - `PodFitsHost`: Checks if a pod has a specific hostname requirement.
-  - `PodFitsHostPorts`: Checks if a node has free ports for a pod’s host port mappings.
-  - `PodSelectorMatches`: Checks if a pod’s node selector matches a node’s labels.
-  - `NoDiskConflict`: Checks if a pod’s volume mounts conflict with any other pod’s volume mounts on the same node.
+    - `PodFitsResources`: Checks if a node has enough CPU and memory.
+    - `PodFitsHost`: Checks if a pod has a specific hostname requirement.
+    - `PodFitsHostPorts`: Checks if a node has free ports for a pod’s host port mappings.
+    - `PodSelectorMatches`: Checks if a pod’s node selector matches a node’s labels.
+    - `NoDiskConflict`: Checks if a pod’s volume mounts conflict with any other pod’s volume mounts on the same node.
 - **Priorities**: Numeric functions used for scoring nodes.
-  - `LeastRequestedPriority`: Favors nodes with lower resource utilization.
-  - `BalancedResourceAllocation`: Favors nodes with balanced resource utilization across CPU and memory.
-  - `NodeAffinityPriority`: Favors nodes that match a pod’s node affinity preferences.
-  - `InterPodAffinityPriority`: Favors nodes that match a pod’s inter-pod affinity and anti-affinity preferences.
+    - `LeastRequestedPriority`: Favors nodes with lower resource utilization.
+    - `BalancedResourceAllocation`: Favors nodes with balanced resource utilization across CPU and memory.
+    - `NodeAffinityPriority`: Favors nodes that match a pod’s node affinity preferences.
+    - `InterPodAffinityPriority`: Favors nodes that match a pod’s inter-pod affinity and anti-affinity preferences.
+- **Extenders**: External processes that run alongside the scheduler to provide additional filtering and scoring logic.
 
 
 ## Customization
@@ -103,6 +106,50 @@
         - name: nginx
           image: nginx
     ```
+    /**
+     * This function is used to select nodes based on specific criteria.
+     * 
+     * @param {Object} nodeSelector - An object that specifies the criteria for selecting nodes. 
+     *                                It contains key-value pairs where the key is the label and 
+     *                                the value is the expected value of that label.
+     * 
+     * @param {Object} matchExpression - An object that specifies more complex criteria for selecting nodes.
+     *                                   It contains an array of expressions, where each expression includes:
+     *                                   - key: The label key to match.
+     *                                   - operator: The operator to apply (e.g., In, NotIn, Exists, DoesNotExist).
+     *                                   - values: An array of values to match against (used with In and NotIn operators).
+     * 
+     * Note:
+     * - `nodeSelector` is simpler and only allows for exact matches on labels.
+     * - `matchExpression` is more flexible and allows for more complex matching logic.
+     * 
+     * Both `nodeSelector` and `matchExpression` are used in Kubernetes to control which nodes a pod can be scheduled on.
+     * 
+     * Example:
+     * 
+     * nodeSelector:
+     * {
+     *   "disktype": "ssd",
+     *   "region": "us-west"
+     * }
+     * 
+     * matchExpression:
+     * [
+     *   {
+     *     "key": "disktype",
+     *     "operator": "In",
+     *     "values": ["ssd", "nvme"]
+     *   },
+     *   {
+     *     "key": "region",
+     *     "operator": "NotIn",
+     *     "values": ["us-east"]
+     *   }
+     * ]
+     * 
+     * In this example, `nodeSelector` will select nodes with labels `disktype=ssd` and `region=us-west`.
+     * `matchExpression` will select nodes with `disktype` either `ssd` or `nvme` and `region` not `us-east`.
+     */
 
     In this example:
     - The pod will only be scheduled on nodes with the label `disktype=ssd`.
@@ -215,6 +262,201 @@
     - **Taints and Tolerations**: Another mechanism to control pod placement by marking nodes with taints and allowing pods with matching tolerations to be scheduled on them.
 
     This allows for more flexible and expressive rules compared to node selectors.
+
+    ## Taints and Tolerations
+
+    ### Overview
+    Taints and tolerations are mechanisms in Kubernetes that work together to ensure that pods are not scheduled onto inappropriate nodes. Taints are applied to nodes, and tolerations are applied to pods. This allows nodes to repel a set of pods unless those pods explicitly tolerate the taint.
+
+    ### Taints
+    A taint is a key-value pair associated with an effect that is applied to a node. The effect can be one of the following:
+    - `NoSchedule`: Pods that do not tolerate the taint will not be scheduled on the node.
+    - `PreferNoSchedule`: Kubernetes will try to avoid scheduling pods that do not tolerate the taint on the node, but it is not guaranteed.
+    - `NoExecute`: Pods that do not tolerate the taint will be evicted if they are already running on the node.
+
+    **Example of applying a taint to a node**:
+    ```bash
+    kubectl taint nodes node1 key=value:NoSchedule
+    ```
+    This command applies a taint with key `key`, value `value`, and effect `NoSchedule` to `node1`.
+
+    ### Tolerations
+    A toleration is a key-value pair associated with an effect that is applied to a pod. Tolerations allow the pod to be scheduled on nodes with matching taints.
+
+    **Example of adding a toleration to a pod**:
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+        name: nginx
+    spec:
+        tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"
+        containers:
+        - name: nginx
+          image: nginx
+    ```
+    This pod tolerates the taint with key `key`, value `value`, and effect `NoSchedule`.
+
+    ### Detailed Examples
+
+    **Example of `NoSchedule` Taint and Toleration**:
+    ```bash
+    kubectl taint nodes node1 key=value:NoSchedule
+    ```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+        name: nginx
+    spec:
+        tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"
+        containers:
+        - name: nginx
+          image: nginx
+    ```
+    In this example, the pod will be scheduled on `node1` because it tolerates the `NoSchedule` taint.
+
+    **Example of `PreferNoSchedule` Taint and Toleration**:
+    ```bash
+    kubectl taint nodes node1 key=value:PreferNoSchedule
+    ```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+        name: nginx
+    spec:
+        tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "PreferNoSchedule"
+        containers:
+        - name: nginx
+          image: nginx
+    ```
+    In this example, Kubernetes will try to avoid scheduling the pod on `node1`, but it is not guaranteed.
+
+    **Example of `NoExecute` Taint and Toleration**:
+    ```bash
+    kubectl taint nodes node1 key=value:NoExecute
+    ```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+        name: nginx
+    spec:
+        tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoExecute"
+          tolerationSeconds: 3600
+        containers:
+        - name: nginx
+          image: nginx
+    ```
+    In this example, the pod will be evicted from `node1` if it does not tolerate the `NoExecute` taint. The `tolerationSeconds` field specifies that the pod can tolerate the taint for 3600 seconds (1 hour) before being evicted.
+
+    ### Use Cases
+    - **Dedicated Nodes**: Use taints to dedicate nodes to specific workloads, ensuring that only pods with the appropriate tolerations are scheduled on those nodes.
+    - **Node Maintenance**: Apply a `NoExecute` taint to a node to evict all pods that do not tolerate the taint, making the node available for maintenance.
+    - **Resource Isolation**: Use taints to isolate resources by preventing certain pods from being scheduled on specific nodes.
+
+    ### Conclusion
+    Taints and tolerations provide a powerful way to control pod placement in Kubernetes. By understanding and using these mechanisms, you can ensure that your workloads are scheduled on appropriate nodes, improving resource utilization and cluster stability.
+
+    ## Operators
+
+    ### Overview
+    Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop.
+
+    ### Types of Operators
+    1. **Stateless Operators**: Manage stateless applications that do not require persistent storage.
+    2. **Stateful Operators**: Manage stateful applications that require persistent storage and maintain state across restarts.
+    3. **Batch Operators**: Manage batch processing jobs that run to completion.
+    4. **Custom Operators**: Implement custom logic for specific use cases.
+
+    ### Example of a Simple Operator
+    Below is an example of a simple operator that manages a custom resource called `MyApp`.
+
+    **Custom Resource Definition (CRD)**:
+    ```yaml
+    apiVersion: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    metadata:
+        name: myapps.example.com
+    spec:
+        group: example.com
+        versions:
+            - name: v1
+                served: true
+                storage: true
+                schema:
+                    openAPIV3Schema:
+                        type: object
+                        properties:
+                            spec:
+                                type: object
+                                properties:
+                                    replicas:
+                                        type: integer
+        scope: Namespaced
+        names:
+            plural: myapps
+            singular: myapp
+            kind: MyApp
+            shortNames:
+            - ma
+    ```
+
+    **Custom Resource (CR)**:
+    ```yaml
+    apiVersion: example.com/v1
+    kind: MyApp
+    metadata:
+        name: myapp-sample
+    spec:
+        replicas: 3
+    ```
+
+    **Operator Logic**:
+    The operator watches for changes to `MyApp` resources and ensures that the specified number of replicas are running.
+
+    **Operator Deployment**:
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+        name: myapp-operator
+    spec:
+        replicas: 1
+        selector:
+            matchLabels:
+                name: myapp-operator
+        template:
+            metadata:
+                labels:
+                    name: myapp-operator
+            spec:
+                containers:
+                - name: myapp-operator
+                    image: myapp-operator:latest
+    ```
+
+    ### Conclusion
+    Operators extend Kubernetes capabilities by automating the management of complex applications. By defining custom resources and implementing control loops, operators can manage the entire lifecycle of applications, ensuring they run reliably and efficiently.
+   
+
 
 - **Pod Affinity and Anti-Affinity**: Define rules for pod placement based on pod labels. Ideal for controlling pod co-location or separation.
 
