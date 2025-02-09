@@ -9,8 +9,8 @@ This repository contains a comprehensive guide and resources for setting up and 
 ## Table of Contents
 
 - [K8s Cluster Core Components](#k8s-cluster-core-components)
-  - [ETCD](#etcd)
-  - [KubeScheduler](#kubescheduler)
+  - [ETCD](#ETCD)
+  - [KubeScheduler](#KubeSchedulers)
 
 <details>
   <summary>ETCD</summary>

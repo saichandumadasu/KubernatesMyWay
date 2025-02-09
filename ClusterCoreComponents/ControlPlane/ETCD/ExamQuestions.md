@@ -9,6 +9,7 @@ title: ETCD Scenario Based Questions
 
 <details>
     <summary>Show Answer</summary>
+
     To diagnose and resolve high latency in an etcd cluster, you can follow these steps:
     1. **Check etcd Metrics:** Use etcd's built-in metrics to monitor performance. Look for high latency metrics such as `etcd_network_peer_round_trip_time_seconds`.
     2. **Inspect Logs:** Check the etcd logs for any errors or warnings that might indicate the cause of the latency.
@@ -17,6 +18,7 @@ title: ETCD Scenario Based Questions
     5. **Cluster Size:** Ensure that the etcd cluster size is appropriate for the workload. An undersized cluster can lead to performance issues.
     6. **Configuration:** Review the etcd configuration for any misconfigurations that might be causing latency.
     7. **Upgrade etcd:** Ensure that you are running the latest stable version of etcd, as performance improvements and bug fixes are regularly released.
+
 </details>
 
 ## Question 2
@@ -24,12 +26,14 @@ title: ETCD Scenario Based Questions
 
 <details>
     <summary>Show Answer</summary>
+
     To replace a failed etcd node and add a new node to the cluster, follow these steps:
     1. **Remove the Failed Node:** Use the `etcdctl member remove <member_id>` command to remove the failed node from the etcd cluster.
     2. **Prepare the New Node:** Install etcd on the new node and configure it with the same settings as the other nodes in the cluster.
     3. **Add the New Node:** Use the `etcdctl member add <new_member_name> --peer-urls=<new_peer_urls>` command to add the new node to the etcd cluster.
     4. **Start etcd on the New Node:** Start the etcd service on the new node with the appropriate configuration.
     5. **Verify Cluster Health:** Use the `etcdctl endpoint health` command to verify that the new node has successfully joined the cluster and that the cluster is healthy.
+
 </details>
 
 
@@ -38,6 +42,7 @@ title: ETCD Scenario Based Questions
 
 <details>
     <summary>Show Answer</summary>
+    
     To resolve a split-brain scenario in an etcd cluster, follow these steps:
     1. **Identify the Cause:** Determine the root cause of the network partition or failure that led to the split-brain scenario.
     2. **Restore Network Connectivity:** Ensure that network connectivity is restored between all etcd nodes.
@@ -46,6 +51,7 @@ title: ETCD Scenario Based Questions
     5. **Re-add Nodes:** Re-add the nodes from the minority group to the majority group using the `etcdctl member add <new_member_name> --peer-urls=<new_peer_urls>` command.
     6. **Verify Cluster Health:** Use the `etcdctl endpoint health` command to verify that the cluster is healthy and all nodes are communicating properly.
     7. **Prevent Future Split-Brain:** Implement network redundancy and monitoring to detect and resolve network issues quickly. Consider using etcd's `--initial-cluster-state` flag to prevent nodes from forming separate clusters.
+
 </details>
 
 ## Question 4
@@ -53,6 +59,7 @@ title: ETCD Scenario Based Questions
 
 <details>
     <summary>Show Answer</summary>
+
     To back up and restore an etcd cluster, follow these steps:
     1. **Backup etcd Data:**
         - Use the `etcdctl snapshot save <backup_file>` command to create a snapshot of the etcd data.
@@ -69,4 +76,5 @@ title: ETCD Scenario Based Questions
         - Use the `etcdctl endpoint health` command to verify that the new nodes have successfully joined the cluster and that the cluster is healthy.
     6. **Remove Old Nodes:**
         - Use the `etcdctl member remove <member_id>` command to remove the old nodes from the etcd cluster.
+
 </details>
