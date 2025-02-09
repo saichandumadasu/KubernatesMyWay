@@ -381,84 +381,84 @@
     ## Operators
 
     ### Overview
-    Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop.
+    Operators in Kubernetes are used to define rules for selecting nodes or pods based on specific criteria. They are used in node affinity, pod affinity, and taints and tolerations.
 
     ### Types of Operators
-    1. **Stateless Operators**: Manage stateless applications that do not require persistent storage.
-    2. **Stateful Operators**: Manage stateful applications that require persistent storage and maintain state across restarts.
-    3. **Batch Operators**: Manage batch processing jobs that run to completion.
-    4. **Custom Operators**: Implement custom logic for specific use cases.
+    1. **In**: Matches if the label value is in a specified list.
+    2. **NotIn**: Matches if the label value is not in a specified list.
+    3. **Exists**: Matches if the label key exists, regardless of its value.
+    4. **DoesNotExist**: Matches if the label key does not exist.
+    5. **Gt**: Matches if the label value is greater than a specified value.
+    6. **Lt**: Matches if the label value is less than a specified value.
 
-    ### Example of a Simple Operator
-    Below is an example of a simple operator that manages a custom resource called `MyApp`.
+    ### Examples
 
-    **Custom Resource Definition (CRD)**:
+    **Node Affinity with Operators**:
     ```yaml
-    apiVersion: apiextensions.k8s.io/v1
-    kind: CustomResourceDefinition
+    apiVersion: v1
+    kind: Pod
     metadata:
-        name: myapps.example.com
+        name: nginx
     spec:
-        group: example.com
-        versions:
-            - name: v1
-                served: true
-                storage: true
-                schema:
-                    openAPIV3Schema:
-                        type: object
-                        properties:
-                            spec:
-                                type: object
-                                properties:
-                                    replicas:
-                                        type: integer
-        scope: Namespaced
-        names:
-            plural: myapps
-            singular: myapp
-            kind: MyApp
-            shortNames:
-            - ma
+        affinity:
+            nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: disktype
+                            operator: In
+                            values:
+                            - ssd
+        containers:
+        - name: nginx
+            image: nginx
     ```
+    In this example, the pod will be scheduled on nodes with the label `disktype=ssd`.
 
-    **Custom Resource (CR)**:
+    **Pod Affinity with Operators**:
     ```yaml
-    apiVersion: example.com/v1
-    kind: MyApp
+    apiVersion: v1
+    kind: Pod
     metadata:
-        name: myapp-sample
+        name: nginx
+        labels:
+            app: nginx
     spec:
-        replicas: 3
+        affinity:
+            podAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                        matchExpressions:
+                        - key: app
+                            operator: In
+                            values:
+                            - nginx
+                    topologyKey: "kubernetes.io/hostname"
+        containers:
+        - name: nginx
+            image: nginx
     ```
+    In this example, the pod will be scheduled on nodes where other pods with the label `app=nginx` are running.
 
-    **Operator Logic**:
-    The operator watches for changes to `MyApp` resources and ensures that the specified number of replicas are running.
-
-    **Operator Deployment**:
+    **Taints and Tolerations with Operators**:
     ```yaml
-    apiVersion: apps/v1
-    kind: Deployment
+    apiVersion: v1
+    kind: Pod
     metadata:
-        name: myapp-operator
+        name: nginx
     spec:
-        replicas: 1
-        selector:
-            matchLabels:
-                name: myapp-operator
-        template:
-            metadata:
-                labels:
-                    name: myapp-operator
-            spec:
-                containers:
-                - name: myapp-operator
-                    image: myapp-operator:latest
+        tolerations:
+        - key: "key"
+            operator: "Exists"
+            effect: "NoSchedule"
+        containers:
+        - name: nginx
+            image: nginx
     ```
+    In this example, the pod tolerates any taint with the key `key` and effect `NoSchedule`.
 
     ### Conclusion
-    Operators extend Kubernetes capabilities by automating the management of complex applications. By defining custom resources and implementing control loops, operators can manage the entire lifecycle of applications, ensuring they run reliably and efficiently.
-   
+    Operators provide a flexible way to define rules for pod and node selection in Kubernetes. By using operators like `In`, `NotIn`, `Exists`, and `DoesNotExist`, users can create complex scheduling rules to optimize resource utilization and ensure efficient application performance.
 
 
 - **Pod Affinity and Anti-Affinity**: Define rules for pod placement based on pod labels. Ideal for controlling pod co-location or separation.
