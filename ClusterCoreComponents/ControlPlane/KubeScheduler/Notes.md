@@ -11,8 +11,7 @@
 - [Types of Scheduling Criteria](#types-of-scheduling-criteria)
 - [Advanced Concepts](#advanced-concepts)
 - [Conclusion](#conclusion)
-- [Taints and Tolerations](#taints-and-tolerations)
-- [Operators](#operators)
+
 
 ## Overview
 - **Purpose**: Assign pods (groups of one or more containers) to nodes in a cluster.
@@ -106,6 +105,9 @@
         - name: nginx
           image: nginx
     ```
+    ## Node Selection Function
+
+    ```javascript
     /**
      * This function is used to select nodes based on specific criteria.
      * 
@@ -150,6 +152,7 @@
      * In this example, `nodeSelector` will select nodes with labels `disktype=ssd` and `region=us-west`.
      * `matchExpression` will select nodes with `disktype` either `ssd` or `nvme` and `region` not `us-east`.
      */
+    ```
 
     In this example:
     - The pod will only be scheduled on nodes with the label `disktype=ssd`.
