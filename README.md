@@ -32,3 +32,12 @@ This repository contains a comprehensive guide and resources for setting up and 
 
 </details>
 
+<details>
+  <summary>KubeControllerManager</summary>
+
+  - [KubeControllerManager Notes](ClusterCoreComponents/ControlPlane/KubeControllerManager/Notes.md)
+  - [KubeControllerManager Manifest](ClusterCoreComponents/ControlPlane/KubeControllerManager/Manifest.yaml)
+  - [KubeControllerManager Scenario Based Questions](ClusterCoreComponents/ControlPlane/KubeControllerManager/ExamQuestions.md)
+  - [KubeControllerManager Commands](ClusterCoreComponents/ControlPlane/KubeControllerManager/commands.sh)
+
+</details>
