@@ -5,7 +5,45 @@ title: ETCD Notes
 # ETCD Notes
 
 ## Overview
-ETCD is a distributed reliable key-value store that is simple, secure, and fast.
+
+ETCD is a distributed reliable key-value store that is simple, secure, and fast. Kubernetes is a distributed system and it needs an efficient distributed database like etcd that supports its distributed nature. It acts as both a backend service discovery and a database. You can call it the brain of the Kubernetes cluster.
+
+etcd is an open-source strongly consistent, distributed key-value store. So what does it mean?
+
+1. **Strongly consistent**: If an update is made to a node, strong consistency will ensure it gets updated to all the other nodes in the cluster immediately. Also, if you look at the CAP theorem, achieving 100% availability with strong consistency and Partition Tolerance is impossible.
+2. **Distributed**: etcd is designed to run on multiple nodes as a cluster without sacrificing consistency.
+3. **Key Value Store**: A non-relational database that stores data as keys and values. It also exposes a key-value API. The datastore is built on top of BboltDB which is a fork of BoltDB.
+
+etcd uses the raft consensus algorithm for strong consistency and availability. It works in a leader-member fashion for high availability and to withstand node failures.
+
+### How does etcd work with Kubernetes?
+
+To put it simply, when you use `kubectl` to get Kubernetes object details, you are getting it from etcd. Also, when you deploy an object like a pod, an entry gets created in etcd.
+
+In a nutshell, here is what you need to know about etcd:
+
+- etcd stores all configurations, states, and metadata of Kubernetes objects (pods, secrets, daemonsets, deployments, configmaps, statefulsets, etc).
+- etcd allows a client to subscribe to events using the `Watch()` API. Kubernetes api-server uses the etcd’s watch functionality to track the change in the state of an object.
+- etcd exposes a key-value API using gRPC. Also, the gRPC gateway is a RESTful proxy that translates all the HTTP API calls into gRPC messages. This makes it an ideal database for Kubernetes.
+- etcd stores all objects under the `/registry` directory key in key-value format. For example, information on a pod named Nginx in the default namespace can be found under `/registry/pods/default/nginx`.
+
+![etcd](Images/etcd1.jpg)
+
+Also, etcd is the only Statefulset component in the control plane.
+
+The number of nodes in an etcd cluster directly affects its fault tolerance. Here's how it breaks down:
+
+- **3 nodes**: Can tolerate 1 node failure (quorum = 2)
+- **5 nodes**: Can tolerate 2 node failures (quorum = 3)
+- **7 nodes**: Can tolerate 3 node failures (quorum = 4)
+
+And so on. The general formula for the number of node failures a cluster can tolerate is:
+
+```
+fault tolerance = (n - 1) / 2
+```
+
+Where `n` is the total number of nodes.
 
 ## Index
 - [Installation of ETCD](#installation-of-etcd)

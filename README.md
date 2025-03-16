@@ -1,6 +1,7 @@
 # KubernatesMyWay
 
 ![Architecture of Kubernetes Hand Draw](Images/K8sArchitectureDrawn.jpg)
+![Architecture of Kubernetes Internet](Images/k8sarchitecture2.jpg)
 
 ## Overview
 
@@ -33,11 +34,11 @@ This repository contains a comprehensive guide and resources for setting up and 
 </details>
 
 <details>
-  <summary>KubeControllerManager</summary>
+  <summary>KubeControlManager</summary>
 
-  - [KubeControllerManager Notes](ClusterCoreComponents/ControlPlane/KubeControllerManager/Notes.md)
-  - [KubeControllerManager Manifest](ClusterCoreComponents/ControlPlane/KubeControllerManager/Manifest.yaml)
-  - [KubeControllerManager Scenario Based Questions](ClusterCoreComponents/ControlPlane/KubeControllerManager/ExamQuestions.md)
-  - [KubeControllerManager Commands](ClusterCoreComponents/ControlPlane/KubeControllerManager/commands.sh)
+  - [KubeControlManager Notes](ClusterCoreComponents/ControlPlane/KubeControlManager/Notes.md)
+  - [KubeControlManager Manifest](ClusterCoreComponents/ControlPlane/KubeControlManager/Manifest.yaml)
+  - [KubeControlManager Scenario Based Questions](ClusterCoreComponents/ControlPlane/KubeControlManager/ExamQuestions.md)
+  - [KubeControlManager Commands](ClusterCoreComponents/ControlPlane/KubeControlManager/commands.sh)
 
 </details>
